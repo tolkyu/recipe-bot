@@ -1,0 +1,6 @@
+python-telegram-bot==21.*
+pandas
+rapidfuzz
+pydantic
+python-dotenv
+loguru

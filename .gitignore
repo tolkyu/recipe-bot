@@ -1,0 +1,21 @@
+# venv
+.venv/
+venv/
+
+# python caches
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.cache/
+
+# system
+.DS_Store
+
+# secrets
+.env
+.env.local
+
+# IDE
+.vscode/
+.idea/
