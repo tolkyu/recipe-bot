@@ -1,6 +1,5 @@
 python-telegram-bot==21.*
-pandas
-rapidfuzz
-pydantic
+requests
 python-dotenv
 loguru
+requests==2.32.3
