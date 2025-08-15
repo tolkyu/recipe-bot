@@ -1,4 +1,6 @@
 import os
+import urllib.request
+import json
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -9,7 +11,6 @@ from loguru import logger
 from telegram.ext import (
     Application, CommandHandler, CallbackQueryHandler, MessageHandler, filters
 )
-import requests
 
 from app.handlers import (
     start, filters_cmd, filters_toggle,
@@ -21,11 +22,12 @@ from app.handlers_ai import ai_menu_cmd, ai_dish_pick
 def _delete_webhook(token: str) -> None:
     """Щоб не ловити Conflict, стираємо webhook перед стартом polling."""
     try:
-        r = requests.get(f"https://api.telegram.org/bot{token}/deleteWebhook", timeout=10)
-        if r.ok:
-            logger.info("Webhook deleted (ok).")
-        else:
-            logger.warning(f"Webhook delete returned {r.status_code}: {r.text[:200]}")
+        url = f"https://api.telegram.org/bot{token}/deleteWebhook"
+        with urllib.request.urlopen(url, timeout=10) as response:
+            if response.status == 200:
+                logger.info("Webhook deleted (ok).")
+            else:
+                logger.warning(f"Webhook delete returned {response.status}: {response.read(200).decode()}")
     except Exception as e:
         logger.warning(f"Webhook delete failed: {e}")
 
@@ -49,6 +51,7 @@ def main():
     app.add_handler(MessageHandler(filters.Regex(r"^/(ingredients|ingridients)(@\w+)?$"), ingredients_start), group=0)
 
     app.add_handler(MessageHandler(filters.ALL, any_update_handler), group=1)
+
 
     app.add_handler(CommandHandler("menu", ai_menu_cmd), group=2)
     app.add_handler(CommandHandler("suggest", ai_menu_cmd), group=2)
